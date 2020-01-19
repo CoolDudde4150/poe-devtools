@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package PoETrade.proto;
+
+message PoeTradeRequest {
+    Query query = 1;
+}
+
+// Top level json query
+message Query {
+    string name = 1;
+    string type = 2;
+
+    Status status = 3;
+    Filters filters = 4;
+    repeated Stats stats = 5;
+}
+
+// STATUS ############
+message Status {
+    string option = 1;
+}
+// END STATUS ########
+
+// STATS #############
+// Code for filtering search by an affix
+message Stats {
+    string type = 1;
+    repeated StatFilter filters = 2;
+}
+
+// Intended to be able to get the stat id from the class that will return all affix information
+// Potentially will be able to search id's by text and type
+message StatFilter {
+    // the id of a stat. Found at https://www.pathofexile.com/api/trade/data/stats.
+    string id = 1;
+    FilterRange value = 2;
+    bool disabled = 3;
+}
+// END STATS #########
+
+
+// FILTERS ###########
+// Code for filtering based on everything seen below type weapon filters on https://www.pathofexile.com/trade/search
+message Filters {
+    WeaponRequirements weapon_filters = 1;
+    ArmourRequirements armour_filters = 2;
+    SocketRequirements socket_filters = 3;
+}
+
+// REQUIREMENTS ######
+// Specifying the min and max for the possible values of various pieces of equipment and stuff
+message WeaponRequirements {
+    bool disabled = 1;
+    WeaponFilters filters = 2;
+}
+
+message ArmourRequirements {
+    bool disabled = 1;
+    ArmourFilters filters = 2;
+}
+
+message SocketRequirements {
+    bool disabled = 1;
+    SocketFilters filters = 2;
+}
+
+message SocketFilters {
+
+}
+
+
+
+message ArmourFilters {
+    FilterRange ar = 1;
+    FilterRange es = 2;
+    FilterRange ev = 3;
+    FilterRange block = 4;
+}
+
+message WeaponFilters {
+    FilterRange damage = 1;
+    FilterRange crit = 2;
+    FilterRange aps = 3;
+    FilterRange dps = 4;
+    FilterRange edps = 5;
+    FilterRange pdps = 6;
+}
+
+message FilterRange {
+    int64 min = 1;
+    int64 max = 2;
+}
+
