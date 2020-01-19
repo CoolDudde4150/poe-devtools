@@ -3,4 +3,3 @@ env/
 .pytest_cache/
 __pycache__/
 build/
-*_pb2.py
