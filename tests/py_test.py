@@ -8,5 +8,5 @@ sys.path.append(os.path.join(module_dir, '../'))
 
 from PoeDevTools.PoeTrade import PoeTrade
 
-def test():
+def test_import():
     assert True
