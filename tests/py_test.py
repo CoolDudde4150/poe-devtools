@@ -3,8 +3,8 @@ import pytest
 import os
 import sys
 
-module_dir = os.path.dirname(__file__)
-sys.path.append(os.path.join(module_dir, '../'))
+import sys, os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from PoeDevTools.PoeTrade import PoeTrade
 
