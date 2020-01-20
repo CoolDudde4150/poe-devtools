@@ -1,44 +1,35 @@
 import json
 import requests
-import PoeDevTools.PoeTrade.request_pb2 as query
+import PoeDevTools.PoeTrade.request_pb2 as PoeRequest
 from google.protobuf.json_format import MessageToJson, MessageToDict
 
 class PoeTrade:
     URL = "https://www.pathofexile.com/api/trade/search/"
+
+    searchParams = PoeRequest.PoeTradeRequest()
     
     def __init__(self):
         # There always needs to be a value for the league
         self.league = "Standard"
+
+    def print_query(self):
+    	print(self.searchParams.query)
         
 
+PoeTradeObj = PoeTrade()
 
-# PARAMS = {
-#     "query": {
-#         "status": {
-#             "option": "online"
-#         },
-#         "name": "The Pariah",
-#         "type": "Unset Ring",
-#         "stats": [{
-#             "type": "and",
-#             "filters": []
-#         }]
-#     },
-#     "sort": {
-#         "price": "asc"
-#     }
-# }
+PoeTradeObj.searchParams.query.name = "The Pariah"
+PoeTradeObj.searchParams.query.status.option = "online"
 
-# b = query.PoeTradeRequest()
+stats = PoeRequest.Stats()
+stats.type = "and"
+stat_filter = PoeRequest.StatFilter()
+stat_filter.id = "my nuts"
+stat_filter.value.min = 1
+stat_filter.value.max = 10
 
-# b.query.status.option = "online"
-# b.query.name = "The Pariah"
-# b.query.type = "Unset Ring"
-# b.query.stats.extend([])
+stats.filters.extend([stat_filter])
 
-# print((MessageToDict(b, True)))
+PoeTradeObj.stats.extend([stats])
 
-# response = requests.post("https://www.pathofexile.com/api/trade/search/Standard", json = MessageToDict(b, True))
-
-# cool = response.json()
-# print(cool)
+PoeTradeObj.print_query()
