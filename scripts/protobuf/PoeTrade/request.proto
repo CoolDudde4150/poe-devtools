@@ -66,9 +66,20 @@ message SocketRequirements {
 }
 
 message SocketFilters {
-
+    SocketValues sockets = 1;
+    SocketValues links = 2;
 }
 
+// Unfortunate the min and max fields arent a separate field, so they need to be recoded
+// TODO: Rename
+message SocketValues {
+    int64 min = 1;
+    int64 max = 2;
+    int64 r = 3;
+    int64 g = 4;
+    int64 b = 5;
+    int64 w = 6;
+}
 
 
 message ArmourFilters {
