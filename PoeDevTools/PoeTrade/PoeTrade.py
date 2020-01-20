@@ -16,20 +16,20 @@ class PoeTrade:
     	print(self.searchParams.query)
         
 
-PoeTradeObj = PoeTrade()
+#PoeTradeObj = PoeTrade()
 
-PoeTradeObj.searchParams.query.name = "The Pariah"
-PoeTradeObj.searchParams.query.status.option = "online"
+#PoeTradeObj.searchParams.query.name = "The Pariah"
+#PoeTradeObj.searchParams.query.status.option = "online"
 
-stats = PoeRequest.Stats()
-stats.type = "and"
-stat_filter = PoeRequest.StatFilter()
-stat_filter.id = "my nuts"
-stat_filter.value.min = 1
-stat_filter.value.max = 10
+#stats = PoeRequest.Stats()
+#stats.type = "and"
+#stat_filter = PoeRequest.StatFilter()
+#stat_filter.id = "my nuts"
+#stat_filter.value.min = 1
+#stat_filter.value.max = 10
 
-stats.filters.extend([stat_filter])
+#stats.filters.extend([stat_filter])
 
-PoeTradeObj.stats.extend([stats])
+#PoeTradeObj.stats.extend([stats])
 
-PoeTradeObj.print_query()
+#PoeTradeObj.print_query()
