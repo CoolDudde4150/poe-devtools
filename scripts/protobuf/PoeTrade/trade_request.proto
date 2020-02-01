@@ -14,6 +14,8 @@ message Query {
     Status status = 3;
     Filters filters = 4;
     repeated Stats stats = 5;
+
+    Sort sort = 6;
 }
 
 // STATUS ############
@@ -101,5 +103,9 @@ message WeaponFilters {
 message FilterRange {
     int64 min = 1;
     int64 max = 2;
+}
+
+message Sort {
+    string price = 1;
 }
 
