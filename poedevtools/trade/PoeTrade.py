@@ -2,14 +2,14 @@ import requests
 
 from google.protobuf.json_format import MessageToJson, MessageToDict
 from google.protobuf import text_format
-import poedevtools.trade.request_pb2 as PoeRequest
+import poedevtools.trade.trade_request_pb2 as PoeRequest
 import json
 
 # TODO: Find a way to print all the fields of a protobuf including empty ones.
 # TODO: Add setters and getters for parts of the protobuf
 class PoeTrade:
-    search_URL = "https://www.pathofexile.com/api/trade/search/"
-    fetch_URL = "https://www.pathofexile.com/api/trade/fetch/"
+    """
+    Master class for manipulating the PoE official trade API
 
     Args:
         league (str): The league of Path of Exile to search the API. Optional, defaults to "standard".
@@ -19,8 +19,12 @@ class PoeTrade:
         response (dict): A save of a search result. Optional, defaults to an empty dict
     """
     
-    def __init__(self):
-        # There always needs to be a value for the league
+    def __init__(self,
+                 league = "standard",
+                 search_params = PoeRequest.PoeTradeRequest(),
+                 search_URL = "https://www.pathofexile.com/api/trade/search/",
+                 fetch_URL = "https://www.pathofexile.com/api/trade/fetch/",
+                 response = {}):
         self.league = "Standard"
         self.search_params = search_params
         self.search_URL = search_URL
@@ -40,6 +44,7 @@ class PoeTrade:
         return self.response
 
     def reset_query(self):
+
         self.search_params = PoeRequest.PoeTradeRequest()
 
     # TODO: It would likely be a good idea to return the error received and let the application maker
