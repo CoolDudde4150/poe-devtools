@@ -11,13 +11,21 @@ class PoeTrade:
     search_URL = "https://www.pathofexile.com/api/trade/search/"
     fetch_URL = "https://www.pathofexile.com/api/trade/fetch/"
 
-    search_params = PoeRequest.PoeTradeRequest()
-
-    response = {}
-
+    Args:
+        league (str): The league of Path of Exile to search the API. Optional, defaults to "standard".
+        search_params (dict|PoeTradeRequest proto|str): A custom json-like message. Optional, defaults to an empty PoeTradeRequest
+        search_URL (str): URL to the search part of the trade API. Optional, defaults to https://www.pathofexile.com/api/trade/search/.
+        fetch_URL (str): URL to the fetch part of the trade API.  Optional, defaults to https://www.pathofexile.com/api/trade/fetch/.
+        response (dict): A save of a search result. Optional, defaults to an empty dict
+    """
+    
     def __init__(self):
         # There always needs to be a value for the league
         self.league = "Standard"
+        self.search_params = search_params
+        self.search_URL = search_URL
+        self.fetch_URL = fetch_URL
+        self.response = response
 
     def print_query(self):
         print(text_format.MessageToString(self.search_params, as_utf8=True))
@@ -38,16 +46,28 @@ class PoeTrade:
     #       deal with it.
     # TODO: Add functionality to use a dict or plain json.
     # TODO: Add custom start and stop functionality
-    # Performs the actual search with a query on the poe trade api.
-    #
-    # PoeTradeRequest - A protobuf object provided with this object.
-    # num_get - The number of results you want returned.
-    # save_response - This object can save a search response if wanted for later reference
-    # start - A custom search start position. Defaults to 0 if not set
-    def search(self, PoeTradeRequest=None, num_get=10, save_response=False, start=None):
+    def search(self, poe_trade_request=None, num_get=10, save_response=False, start=0):
+        """Performs a search with a query against the PoE Trade API.
+
+        Uses a form of json query against the trade API. Natively, the requests package uses dict objects. 
+        It is therefore slightly more efficient to use a dict object for the input. Due to the nature of
+        the PoE API limiting the number of requests per second, the effect is extremely negligible.
+
+        This function can support a dict object, PoeTradeRequest proto object or a json string.
+        
+        Args:
+            poe_trade_request (dict|PoeTradeRequest proto|str): The query to be used against the api. Optional, 
+            defaults to using a saved query.
+            num_get (int): The number of items to be returned. Optional, defaults to 10 (the maximum that can be done in one request)
+            save_response (bool): Whether the response should be saved within this object (it is still returned). Optional, defaults to false
+            start (int):  A custom start position. Skips the first *start* responses. Optional, defaults to 0.
+
+        Returns:
+            dict: The items that were returned from the search.
+        """
         # Use the saved trade request if none are provided
-        if PoeTradeRequest is not None:
-            request = PoeTradeRequest
+        if poe_trade_request is not None:
+            request = poe_trade_request
         else:
             request = self.search_params
 
@@ -81,7 +101,6 @@ class PoeTrade:
         # we can only search for 10 id's per query, so store every iteration of 10 in items.
         items = {"result": []}
 
-        start = 0
         while num_get > 0:
             # It works but I know there is a cleaner way with modulus >:^()
             if num_get > 10:
