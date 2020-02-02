@@ -4,6 +4,7 @@ package PoETrade.proto;
 
 message PoeTradeRequest {
     Query query = 1;
+    Sort sort = 6;
 }
 
 // Top level json query
@@ -14,8 +15,6 @@ message Query {
     Status status = 3;
     Filters filters = 4;
     repeated Stats stats = 5;
-
-    Sort sort = 6;
 }
 
 // STATUS ############
