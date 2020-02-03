@@ -9,49 +9,39 @@ import json
 # TODO: Add setters and getters for parts of the protobuf
 class PoeTrade:
     """
-    Master class for manipulating the PoE official trade API
+    Base class for manipulating the PoE official trade API
 
     Args:
-        league (str): The league of Path of Exile to search the API. Optional, defaults to "standard".
-        search_params (dict|PoeTradeRequest proto|str): A custom json-like message. Optional, defaults to an empty PoeTradeRequest
-        search_URL (str): URL to the search part of the trade API. Optional, defaults to https://www.pathofexile.com/api/trade/search/.
-        fetch_URL (str): URL to the fetch part of the trade API.  Optional, defaults to https://www.pathofexile.com/api/trade/fetch/.
+        league (str): The league of Path of Exile to search the API. Optional, defaults to standard.
+        query (dict|PoeTradeRequest proto|str): A custom json-like message. Optional, defaults to an empty PoeTradeRequest
+        trade_api_startpoint (str): The URL that points to the base level for the trade api. Optional, defaults to https://www.pathofexile.com/api/trade/
         response (dict): A save of a search result. Optional, defaults to an empty dict
     """
     
     def __init__(self,
                  league = "standard",
-                 search_params = PoeRequest.PoeTradeRequest(),
-                 search_URL = "https://www.pathofexile.com/api/trade/search/",
-                 fetch_URL = "https://www.pathofexile.com/api/trade/fetch/",
+                 query = PoeRequest.PoeTradeRequest(),
+                 trade_api_startpoint = "https://www.pathofexile.com/api/trade/",
                  response = {}):
         self.league = "Standard"
-        self.search_params = search_params
-        self.search_URL = search_URL
-        self.fetch_URL = fetch_URL
+        self.query = query
+        self.trade_api_startpoint = trade_api_startpoint
         self.response = response
 
     def print_query(self):
-        print(text_format.MessageToString(self.search_params, as_utf8=True))
+        """Prints the query using the protobuf standard. Dont use if not protobuf"""
 
-    def get_query(self):
-        return self.search_params
-
-    def set_query(self, query):
-        self.search_params = query
-
-    def get_saved_response(self):
-        return self.response
+        print(text_format.MessageToString(self.query, as_utf8=True))
 
     def reset_query(self):
+        """Resets the saved query to an empty query.
+        """
 
-        self.search_params = PoeRequest.PoeTradeRequest()
+        self.query = PoeRequest.PoeTradeRequest()
 
-    # TODO: It would likely be a good idea to return the error received and let the application maker
-    #       deal with it.
     # TODO: Add functionality to use a dict or plain json.
     # TODO: Add custom start and stop functionality
-    def search(self, poe_trade_request=None, num_get=10, save_response=False, start=0):
+    def search(self, query=None, num_get=10, start=0, save_response=False, save_query=False):
         """Performs a search with a query against the PoE Trade API.
 
         Uses a form of json query against the trade API. Natively, the requests package uses dict objects. 
@@ -61,22 +51,26 @@ class PoeTrade:
         This function can support a dict object, PoeTradeRequest proto object or a json string.
         
         Args:
-            poe_trade_request (dict|PoeTradeRequest proto|str): The query to be used against the api. Optional, 
-            defaults to using a saved query.
+            query (dict|PoeTradeRequest proto|str): The query to be used against the api. Optional, defaults to using a saved query.
             num_get (int): The number of items to be returned. Optional, defaults to 10 (the maximum that can be done in one request)
-            save_response (bool): Whether the response should be saved within this object (it is still returned). Optional, defaults to false
             start (int):  A custom start position. Skips the first *start* responses. Optional, defaults to 0.
+            save_response (bool): Whether the response should be saved within this object (it is still returned). Optional, defaults to false
+            save_query (bool): Whether the input query should be saved within this object. Will set the saved query to None if nothing is provided.
 
         Returns:
             dict: The items that were returned from the search.
         """
-        # Use the saved trade request if none are provided
-        if poe_trade_request is not None:
-            request = poe_trade_request
-        else:
-            request = self.search_params
 
-        # Convert it to a dict to send
+        if save_query:
+            self.save_query(query)
+
+        # Use the saved trade request if none are provided
+        if query is not None:
+            request = query
+        else:
+            request = self.query
+
+        # Convert it to a dict to send. The trade api seems to be very picky :(.
         if isinstance(request, PoeRequest.PoeTradeRequest):
             json_query = MessageToDict(request, preserving_proto_field_name=True)
         elif isinstance(request, dict):
@@ -87,15 +81,16 @@ class PoeTrade:
             print("Not a valid type for PoeTradeRequest")
             return None
 
-        # Get the id responses from path of exile trade
+        # Get the id responses from path of exile trade. They are the ID of the items I guess.
         response = requests.post(
-            url=self.search_URL + self.league,
+            url=self.trade_api_startpoint + "search/" + self.league,
             json=json_query,
         )
 
         dict_response = response.json()
 
-        # If the query return nothing, return the error message response. It will still be a json/dict
+        # If the query returns nothing, return the error message response. It will still be a json/dict
+        # Assume user application will deal with errors.
         if "result" not in dict_response:
             return dict_response
 
@@ -103,22 +98,23 @@ class PoeTrade:
         if len(dict_response) < num_get:
             num_get = len(dict_response)
 
-        # we can only search for 10 id's per query, so store every iteration of 10 in items.
+        # We can only search for 10 id's per query, so store every iteration of 10 in items.
         items = {"result": []}
 
         while num_get > 0:
-            # It works but I know there is a cleaner way with modulus >:^()
+            # It works but Im pretty sure there is a cleaner way with modulus >:^()
             if num_get > 10:
                 end = start + 10
             else:
                 end = start + num_get
             num_get -= 10
 
-            fetch_url_temp = self.fetch_URL
+            # We query the trade api with the item ID's we retreived before here
+            fetch_url_temp = self.trade_api_startpoint + "fetch/"
             for result in dict_response["result"][start:end]:
                 fetch_url_temp += result + ","
+            # The general url for this is just the fetch url with the query ID's added to the end separated by commas.
             fetch_url_temp = fetch_url_temp[:-1] + "?query=" + dict_response["id"]
-
             items_response = requests.get(fetch_url_temp)
 
             # Try to convert the response to json
@@ -128,8 +124,8 @@ class PoeTrade:
                 # Not sure how I want to do this. Return a formatted dict with empty results? Need to see what other errors can occur
                 return items
 
-            for id_ in json_item_reponse["result"]:
-                items["result"].append(id_)
+            for id in json_item_reponse["result"]:
+                items["result"].append(id)
 
             start = end
 
@@ -137,3 +133,33 @@ class PoeTrade:
             self.response = items
 
         return items
+
+    def get_leagues(self):
+        """Returns the current running leagues in Path of Exile
+
+        Returns:
+            (dict): A dict of the leagues being run.
+        """
+
+        return requests.get(self.trade_api_startpoint + "data/leagues/").json()
+    
+    def get_items(self):
+        """Returns the all the currently possible items in Path of Exile
+        
+        Returns:
+            (dict): A dict of all the items
+        """
+
+        return requests.get(self.trade_api_startpoint + "data/items/").json()
+
+    def save_query(self, query):
+        """Saves a query that has been made in this data structure.
+
+        This query can be run through the search function by providing no query in the function call.
+
+        Args:
+            query (dict|PoeTradeRequest|str): The query to be saved.
+        """
+
+        self.query = query
+
