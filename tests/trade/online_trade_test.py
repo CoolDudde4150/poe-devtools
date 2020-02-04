@@ -1,3 +1,4 @@
+import numpy
 import pytest
 
 import os
@@ -10,7 +11,6 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from poedevtools.trade import PoeTrade
 from poedevtools.trade import trade_request_pb2
 from google.protobuf.json_format import MessageToJson, MessageToDict
-import numpy
 
 def test_malformed_search():
     """Tests the ability to handle malformed searches
