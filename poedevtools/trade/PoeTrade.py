@@ -8,8 +8,7 @@ import poedevtools.trade.trade_request_pb2 as PoeRequest
 # TODO: Find a way to print all the fields of a protobuf including empty ones.
 # TODO: Add setters and getters for parts of the protobuf
 class PoeTrade:
-    """
-    Base class for manipulating the PoE official trade API
+    """Base class for manipulating the PoE official trade API
 
     Args:
         league (str): The league of Path of Exile to search the API. Optional, defaults to standard.
