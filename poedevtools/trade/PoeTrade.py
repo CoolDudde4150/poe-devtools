@@ -1,3 +1,25 @@
+"""Functionality to interact with trade api endpoint of Path of Exile.
+
+This includes:
+* Getting current running leagues
+* Getting current static list of current in game items
+* Getting current possible list of stats that can be on in game items
+* Getting static data, including relative paths to image files.
+* Searching and fetching search on the official trade api
+* Seeing a list of currently ignored accounts and ignoring/unignoring accounts.
+
+This class should encapsulate all the information that the official trade site has availible to it. 
+I'm currently unsure of how live search works, so this class may not have the functionality for that.
+
+TODO: 
+    * Get stats
+    * Get static data
+    * Ignoring/unignoring accounts. This will be significantly harder than the other ones. Need possessid I think.
+
+Raises:
+    ValueError: If the input query is not a valid type
+"""
+
 import json
 import requests
 
@@ -8,8 +30,7 @@ import poedevtools.trade.trade_request_pb2 as PoeRequest
 # TODO: Find a way to print all the fields of a protobuf including empty ones.
 # TODO: Add setters and getters for parts of the protobuf
 class PoeTrade:
-    """
-    Base class for manipulating the PoE official trade API
+    """Base class for manipulating the PoE official trade API
 
     Args:
         league (str): The league of Path of Exile to search the API. Optional, defaults to standard.
@@ -85,19 +106,21 @@ class PoeTrade:
             return response
 
         # If there are less results than the requested amount, get all of them.
-        if len(response) < num_get:
-            num_get = len(response)
+        if len(response["result"]) < num_get:
+            num_get = len(response["result"])
 
         # We can only search for 10 id's per query, so store every iteration of 10 in items.
         items = {"result": []}
 
         while num_get > 0:
+            print(num_get)
             # It works but Im pretty sure there is a cleaner way with modulus >:^()
             if num_get > 10:
                 end = start + 10
             else:
                 end = start + num_get
             num_get -= 10
+            print(start, end)
 
             fetch_url = PoeTrade._get_fetch_url(response["result"][start:end], response["id"])
 
