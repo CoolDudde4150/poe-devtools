@@ -1,16 +1,9 @@
-import numpy
-import pytest
-
 import os
-import sys
-
-import sys, os
-
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import sys 
 
 from poedevtools.trade import PoeTrade
-from poedevtools.trade import trade_request_pb2
-from google.protobuf.json_format import MessageToJson, MessageToDict
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 def test_malformed_search():
     """Tests the ability to handle malformed searches
@@ -50,7 +43,6 @@ def test_query_datatypes():
     proto_request.query.status.option = "online"
     proto_request.sort.price = "dsc"
     proto_request.query.name = "Bottled Faith"
-    # TODO: Add a way to get the same result no matter what
     
     dict_request = {"query": {"status": {"option":"online"}, "name": "Bottled Faith"}, "sort": {"price": "dsc"}}
     json_request = '''{
@@ -77,4 +69,13 @@ def test_get_leagues():
     # Assert that there is at least one league returned.
     assert len(trade_obj.get_leagues()) > 0
 
-test_get_leagues()
+def test_num_get_trade_search():
+    trade_obj = PoeTrade.PoeTrade()
+    query = trade_obj.query
+
+    query.query.status.option = "online"
+
+    assert len(trade_obj.search(query)["result"]) == 10
+    assert len(trade_obj.search(query, num_get=11)["result"]) == 11
+    assert len(trade_obj.search(query, num_get=22)["result"]) == 22
+    assert len(trade_obj.search(query, num_get=6)["result"]) == 6
