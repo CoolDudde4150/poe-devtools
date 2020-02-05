@@ -6,4 +6,4 @@ def test_imports():
 def test_blank_proto():
     trade_obj = PoeTrade.PoeTrade()
 
-    assert trade_obj.print_query() == None
+    assert trade_obj.print_query() is None
