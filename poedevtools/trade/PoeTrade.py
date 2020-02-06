@@ -45,10 +45,13 @@ class PoeTrade:
         league="standard",
         query=PoeRequest.PoeTradeRequest(),
         response=None,
+        poesessid = ""
     ):
         self.league = league
         self.query = query
         self.response = response
+        # Unsure if I want immediate access to poesessid :/
+        self.__poesessid = poesessid
 
     def print_query(self):
         """Prints the query using the protobuf standard. Dont use if not protobuf"""
@@ -145,22 +148,64 @@ class PoeTrade:
         return items
 
     def get_leagues(self):
-        """Returns the current running leagues in Path of Exile
+        """Gets the current running leagues in Path of Exile
 
         Returns:
-            (dict): A dict of the leagues being run.
+            dict: A dict of the leagues being run.
         """
 
         return requests.get(self.trade_api_startpoint + "data/leagues/").json()
 
     def get_items(self):
-        """Returns the all the currently possible items in Path of Exile
+        """Gets the all the currently possible items in Path of Exile
         
         Returns:
-            (dict): A dict of all the items
+            dict: A dict of all the items
         """
 
         return requests.get(self.trade_api_startpoint + "data/items/").json()
+
+    def get_stats(self):
+        """Gets all of the stats that can currently occur on the item in Path of Exile
+        
+        Returns:
+            dict: A dict of all the possible stats
+        """
+
+        return requests.get(self.trade_api_startpoint + "data/stats/").json()
+
+    def get_static(self):
+        """Gets all of the static data information from Path of Exile, including relative paths to image files
+        
+        Returns:
+            dict: A dict of all the static data
+        """
+
+        return requests.get(self.trade_api_startpoint + "data/static/").json()
+
+    def get_ignored_accounts(self, poesessid=None):
+        cookies = self._populate_trade_cookie(poesessid)
+        
+        return requests.get(self.trade_api_startpoint + "ignore/", cookies=cookies).text
+
+    def ignore_account(self, account_name, poesessid=None):
+        cookies = self._populate_trade_cookie(poesessid)
+
+        return requests.put(self.trade_api_startpoint + "ignore/" + account_name, cookies=cookies)
+
+    def unignore_account(self, account_name, poesessid=None):
+        cookies = self._populate_trade_cookie(poesessid)
+
+        return requests.delete(self.trade_api_startpoint + "ignore/" + account_name, cookies=cookies)
+
+    def set_poesessid(self, poesessid):
+        self.__poesessid = poesessid
+
+    def _populate_trade_cookie(self, poesessid):
+        if poesessid is None:
+            poesessid = self.__poesessid
+        
+        return {"POESESSID": poesessid}
 
     def save_query(self, query):
         """Saves a query that has been made in this data structure.
@@ -181,7 +226,7 @@ class PoeTrade:
             query (dict|PoeTradeRequest|str): The query to be converted
         
         Returns:
-            (dict): The resultant 'jsonified' query
+            dict: The resultant 'jsonified' query
         """
 
         if isinstance(query, PoeRequest.PoeTradeRequest):
