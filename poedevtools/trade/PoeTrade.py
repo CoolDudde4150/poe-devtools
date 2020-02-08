@@ -116,14 +116,12 @@ class PoeTrade:
         items = {"result": []}
 
         while num_get > 0:
-            print(num_get)
             # It works but Im pretty sure there is a cleaner way with modulus >:^()
             if num_get > 10:
                 end = start + 10
             else:
                 end = start + num_get
             num_get -= 10
-            print(start, end)
 
             fetch_url = PoeTrade._get_fetch_url(response["result"][start:end], response["id"])
 
@@ -183,12 +181,29 @@ class PoeTrade:
 
         return requests.get(self.trade_api_startpoint + "data/static/").json()
 
-    def get_ignored_accounts(self, poesessid=None):
+    def get_ignored_accounts(self, poesessid=self.__poesessid):
+        """Gets all of the ignored accounts on the trade api based on a poesessid.
+        
+        Args:
+            poesessid (str, optional): The poesessid cookie value that can be obtained from PathofExile.com. Defaults to self.__poesessid.
+        
+        Returns:
+            dict: A dict of ignored accounts.
+        """
         cookies = self._populate_trade_cookie(poesessid)
         
-        return requests.get(self.trade_api_startpoint + "ignore/", cookies=cookies).text
+        return requests.get(self.trade_api_startpoint + "ignore/", cookies=cookies)
 
-    def ignore_account(self, account_name, poesessid=None):
+    def ignore_account(self, account_name, poesessid=self.__poesessid):
+        """Ignores an account on the trade api based on their account name and your poesessid
+        
+        Args:
+            account_name (str): The person who you want to ignore's account name
+            poesessid (str, optional): The poesessid cookie value that can be obtained from PathofExile.com. Defaults to self.__poesessid.
+        
+        Returns:
+            A: [description]
+        """
         cookies = self._populate_trade_cookie(poesessid)
 
         return requests.put(self.trade_api_startpoint + "ignore/" + account_name, cookies=cookies)
