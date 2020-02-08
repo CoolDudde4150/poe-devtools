@@ -1,9 +1,10 @@
 BUILD_DIR = build
 DOCS_DIR = docs
+SHELL = /bin/bash
 
 .PHONY: help
 help:
-	@printf "\n%s" "Usage:" \
+	@printf "\n%s" "Usage" \
 			"make test_offline:		Uses pytest on all test files with the name formatted 'offline*test*.py'"\
 			"make test_online:		Uses pytest on all test files with the name formatted 'online*test*.py'" \
 			"make test:			Uses pytest on all tests found with either of the above name formats." \
