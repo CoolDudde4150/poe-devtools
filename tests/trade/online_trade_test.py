@@ -1,3 +1,5 @@
+"""So much of the stuff cannot be unit tested. Its an api, shit changes.
+"""
 import os
 import sys 
 
