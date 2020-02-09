@@ -28,11 +28,11 @@ test: test_offline test_online
 env:
 	@-rm -rf activate
 	# TODO: Find a way to automatically recognize the version of python being used.
-	python3 -m venv env && \
+	@python3 -m venv env && \
 	source env/bin/activate && \
 	pip install -r requirements.txt && \
 	ln env/bin/activate activate
-	@echo "\n\nUse 'source ./activate' to enter the environment\n"
+	@printf "\n\n%s\n" "Use 'source ./activate' to enter the environment"
 
 .PHONY: proto
 proto:
