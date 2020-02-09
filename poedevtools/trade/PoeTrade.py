@@ -11,11 +11,6 @@ This includes:
 This class should encapsulate all the information that the official trade site has availible to it. 
 I'm currently unsure of how live search works, so this class may not have the functionality for that.
 
-TODO: 
-    * Get stats
-    * Get static data
-    * Ignoring/unignoring accounts. This will be significantly harder than the other ones. Need possessid I think.
-
 Raises:
     ValueError: If the input query is not a valid type
 """
@@ -54,7 +49,8 @@ class PoeTrade:
         self.__poesessid = poesessid
 
     def print_query(self):
-        """Prints the query using the protobuf standard. Dont use if not protobuf"""
+        """Prints the query using the protobuf standard. Dont use if not protobuf
+        """
 
         print(text_format.MessageToString(self.query, as_utf8=True))
 
@@ -64,8 +60,6 @@ class PoeTrade:
 
         self.query = PoeRequest.PoeTradeRequest()
 
-    # TODO: Add functionality to use a dict or plain json.
-    # TODO: Add custom start and stop functionality
     def search(
         self, query=None, num_get=10, start=0, save_response=False, save_query=False
     ):
@@ -181,7 +175,7 @@ class PoeTrade:
 
         return requests.get(self.trade_api_startpoint + "data/static/").json()
 
-    def get_ignored_accounts(self, poesessid=self.__poesessid):
+    def get_ignored_accounts(self, poesessid=None):
         """Gets all of the ignored accounts on the trade api based on a poesessid.
         
         Args:
@@ -190,11 +184,14 @@ class PoeTrade:
         Returns:
             dict: A dict of ignored accounts.
         """
+        if poesessid is None:
+            poesessid = self.__poesessid
+
         cookies = self._populate_trade_cookie(poesessid)
         
         return requests.get(self.trade_api_startpoint + "ignore/", cookies=cookies)
 
-    def ignore_account(self, account_name, poesessid=self.__poesessid):
+    def ignore_account(self, account_name, poesessid=None):
         """Ignores an account on the trade api based on their account name and your poesessid
         
         Args:
@@ -202,7 +199,7 @@ class PoeTrade:
             poesessid (str, optional): The poesessid cookie value that can be obtained from PathofExile.com. Defaults to self.__poesessid.
         
         Returns:
-            A: [description]
+            requests.models.Response: A response to the request to ignore
         """
         cookies = self._populate_trade_cookie(poesessid)
 
@@ -214,13 +211,13 @@ class PoeTrade:
         return requests.delete(self.trade_api_startpoint + "ignore/" + account_name, cookies=cookies)
 
     def set_poesessid(self, poesessid):
+        """Sets the stored poesessid.
+        
+        Args:
+            poesessid (str): [description]
+        """
         self.__poesessid = poesessid
 
-    def _populate_trade_cookie(self, poesessid):
-        if poesessid is None:
-            poesessid = self.__poesessid
-        
-        return {"POESESSID": poesessid}
 
     def save_query(self, query):
         """Saves a query that has been made in this data structure.
@@ -232,6 +229,20 @@ class PoeTrade:
         """
 
         self.query = query
+
+    def _populate_trade_cookie(self, poesessid):
+        """Populates a cookie dict with the poesessid to be sent to the api
+        
+        Args:
+            poesessid (str): The poesessid cookie value that can be obtained from PathofExile.com.
+        
+        Returns:
+            dict: A cookie to be sent with the requests package
+        """
+        if poesessid is None:
+            poesessid = self.__poesessid
+        
+        return {"POESESSID": poesessid}
 
     @classmethod
     def _convert2dict(cls, query):
@@ -259,7 +270,7 @@ class PoeTrade:
         Probably a good change to turn this into a producer(?). Whatever the thing is that just returns the next thing in a list on call.
         
         Args:
-            results (iterable): The list of id's produced from an api search.  
+            results (iterable of str): The list of id's produced from an api search.  
             iden (str): The identification number produced from the search.
         """
         # We query the trade api with the item ID's we retreived before here
