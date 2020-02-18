@@ -8,12 +8,11 @@ class TradeFactory:
     def _get_query(self, query):
         return MessageToDict(query)
 
-    def _set_min_max(self, query, min=None, max=None):
+    def _set_min_max(self, query, min, max):
         if min is not None:
             query.min = min
         if max is not None:
-            query.max = max 
-        return query
+            query.max = max
     
     def _set_disabled(self, disabled, query):
         query.disabled = disabled
@@ -25,9 +24,11 @@ class QueryFactory(TradeFactory):
     def __init__(self):
         self.query = PoeQuery.PoeTradeRequest()
         self.stat_factory = StatFilterFactory()
-        self.weapon_filter_factory = WeaponFilterFactory()
+        self.filter_factory = FilterFactory()
 
     def get_query(self):
+        self.query.query.stats.MergeFrom(self.stat_factory.stats)
+
         return self._get_query(self.query)
     
     def clear(self):
@@ -35,29 +36,37 @@ class QueryFactory(TradeFactory):
         
     def set_name(self, name):
         self.query.query.name = name
+        return self
 
     def set_type(self, item_type):
         self.query.query.type = item_type
+        return self
     
     def set_status(self, status):
         self.query.query.status.option = status
-
-    def add_stat_filter(self, filter):
-        self.query.query.stats.extend(filter)
+        return self
 
 
 class StatFilterFactory(TradeFactory):
     def __init__(self):
+        self.stat_filter = PoeQuery.StatFilter()
         self.stats = PoeQuery.Stats()
 
     def set_id(self, stat_id):
-        self.stats.id = stat_id
+        self.stat_filter.id = stat_id
+        return self
     
     def set_value_range(self, min=None, max=None):
-        self._set_min_max(self.stats.filters.value, min, max)
+        self._set_min_max(self.stat_filter.value, min, max)
+        return self
         
     def set_disabled(self, disabled):
-        self.stats.disabled = disabled
+        self.stat_filter.disabled = disabled
+        return self
+    
+    def add_filter(self):
+        self.stats.filters.extend([self.stat_filter])
+
 
 
 class FilterFactory(TradeFactory):
