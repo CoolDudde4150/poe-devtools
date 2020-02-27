@@ -22,17 +22,17 @@ from google.protobuf.json_format import MessageToDict
 from google.protobuf import text_format
 import poedevtools.trade.trade_request_pb2 as PoeRequest
 
-# TODO: Find a way to print all the fields of a protobuf including empty ones.
-# TODO: Add setters and getters for parts of the protobuf
-class PoeTrade:
+
+class PoeTradeAPI:
     """Base class for manipulating the PoE official trade API
 
     Args:
         league (str): The league of Path of Exile to search the API. Optional, defaults to standard.
         query (dict|PoeTradeRequest proto|str): A custom json-like message. Optional, defaults to an empty PoeTradeRequest
         response (dict): A save of a search result. Optional, defaults to None
+        poesessid (str): The poesessid from pathofexile.com. Used for ignoring accounts
     """
-    
+
     trade_api_startpoint = "https://www.pathofexile.com/api/trade/"
 
     def __init__(
@@ -40,7 +40,7 @@ class PoeTrade:
         league="standard",
         query=PoeRequest.PoeTradeRequest(),
         response=None,
-        poesessid = ""
+        poesessid="",
     ):
         self.league = league
         self.query = query
@@ -90,7 +90,7 @@ class PoeTrade:
             query = self.query
 
         # Convert it to a dict to send. The trade api seems to be very picky :(.
-        dict_query = PoeTrade._convert2dict(query)
+        dict_query = PoeTradeAPI._convert2dict(query)
 
         # Get the id responses from path of exile trade. They are the ID of the items I guess.
         response = requests.post(
@@ -117,7 +117,9 @@ class PoeTrade:
                 end = start + num_get
             num_get -= 10
 
-            fetch_url = PoeTrade._get_fetch_url(response["result"][start:end], response["id"])
+            fetch_url = PoeTradeAPI._get_fetch_url(
+                response["result"][start:end], response["id"]
+            )
 
             items_response = requests.get(fetch_url)
 
@@ -188,7 +190,7 @@ class PoeTrade:
             poesessid = self.__poesessid
 
         cookies = self._populate_trade_cookie(poesessid)
-        
+
         return requests.get(self.trade_api_startpoint + "ignore/", cookies=cookies)
 
     def ignore_account(self, account_name, poesessid=None):
@@ -203,12 +205,16 @@ class PoeTrade:
         """
         cookies = self._populate_trade_cookie(poesessid)
 
-        return requests.put(self.trade_api_startpoint + "ignore/" + account_name, cookies=cookies)
+        return requests.put(
+            self.trade_api_startpoint + "ignore/" + account_name, cookies=cookies
+        )
 
     def unignore_account(self, account_name, poesessid=None):
         cookies = self._populate_trade_cookie(poesessid)
 
-        return requests.delete(self.trade_api_startpoint + "ignore/" + account_name, cookies=cookies)
+        return requests.delete(
+            self.trade_api_startpoint + "ignore/" + account_name, cookies=cookies
+        )
 
     def set_poesessid(self, poesessid):
         """Sets the stored poesessid.
@@ -217,7 +223,6 @@ class PoeTrade:
             poesessid (str): [description]
         """
         self.__poesessid = poesessid
-
 
     def save_query(self, query):
         """Saves a query that has been made in this data structure.
@@ -241,7 +246,7 @@ class PoeTrade:
         """
         if poesessid is None:
             poesessid = self.__poesessid
-        
+
         return {"POESESSID": poesessid}
 
     @classmethod
@@ -260,9 +265,9 @@ class PoeTrade:
         if isinstance(query, dict):
             return query
         if isinstance(query, str):
-            return json.loads(query)        
+            return json.loads(query)
         raise ValueError("query should be a dict, PoeTradeRequest or string")
-    
+
     @classmethod
     def _get_fetch_url(cls, results, iden):
         """Populates a fetch url request with id's. 
