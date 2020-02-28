@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+import "poedevtools/trade/statfilter.proto";
+import "poedevtools/trade/helpers.proto";
+import "poedevtools/trade/requirementfilters.proto";
+
+package poedevtools.trade;
+
+message PoeTradeRequest {
+    Query query = 1;
+    Sort sort = 6;
+}
+
+// Top level json query
+message Query {
+    string name = 1;
+    string type = 2;
+
+    Optional status = 3;
+    Filters filters = 4;
+    repeated Stats stats = 5;
+}
+
+message Sort {
+    string price = 1;
+}
+
