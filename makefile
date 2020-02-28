@@ -1,6 +1,7 @@
 BUILD_DIR = build
 DOCS_DIR = docs
 SHELL = /bin/bash
+PROTO_SRC = scripts/protobuf/src
 
 .PHONY: help
 help:
@@ -36,12 +37,11 @@ env:
 
 .PHONY: proto
 proto:
-	@mkdir -p scripts/protobuf/$(BUILD_DIR)/
 	@echo "Making proto files."
-	@for proto_file in $(shell find . -name *.proto); do \
-		protoc $$proto_file --python_out=scripts/protobuf/build; \
+	@for proto_file in $(shell find $(PROTO_SRC) -name *.proto); do \
+		protoc $$proto_file -I $(PROTO_SRC) --python_out=.; \
 	done
-	@echo "Proto files compiled. Find in scripts/protobuf/$(BUILD_DIR)"
+	@echo "Proto files automatically placed in the needed directories"
 
 .PHONY: docs
 docs:
