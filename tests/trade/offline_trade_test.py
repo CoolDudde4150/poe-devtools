@@ -1,5 +1,5 @@
 import poedevtools.trade.PoeTrade as PoeTrade
-import poedevtools.trade.trade_request_pb2 as TradeRequest
+import poedevtools.trade.traderequest_pb2 as TradeRequest
 
 def test_imports():
     assert True
