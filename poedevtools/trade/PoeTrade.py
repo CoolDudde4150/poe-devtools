@@ -20,7 +20,7 @@ import requests
 
 from google.protobuf.json_format import MessageToDict
 from google.protobuf import text_format
-import poedevtools.trade.trade_request_pb2 as PoeRequest
+import poedevtools.trade.traderequest_pb2 as PoeRequest
 
 # TODO: Find a way to print all the fields of a protobuf including empty ones.
 # TODO: Add setters and getters for parts of the protobuf
