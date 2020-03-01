@@ -6,13 +6,20 @@ PROTO_SRC = scripts/protobuf/src
 .PHONY: help
 help:
 	@printf "\n%s" "Usage" \
+			"make setup:			Setups the project to be developed on." \
 			"make test_offline:		Uses pytest on all test files with the name formatted 'offline*test*.py'"\
 			"make test_online:		Uses pytest on all test files with the name formatted 'online*test*.py'" \
 			"make test:			Uses pytest on all tests found with either of the above name formats." \
 			"make env:			Creates a python virtual environment with the necessary dependencies." \
-			"make proto:			Compiles protobuf files into a build directory. They need to be manually moved" \
+			"make proto:			Compiles protobuf files and moves them into the required directory (based on relative path)" \
 			"make docs:			Compiles the Sphinx documentation"
 	@echo " "
+
+.PHONY: setup
+setup:
+	make env
+	source ./activate
+	make proto
 
 .PHONY: test_offline
 test_offline:
