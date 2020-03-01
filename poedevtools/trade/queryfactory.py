@@ -1,4 +1,4 @@
-import poedevtools.trade.traderequest_pb2 as PoeQuery
+import poedevtools.trade.proto.traderequest_pb2 as PoeQuery
 
 from google.protobuf.json_format import MessageToDict
 

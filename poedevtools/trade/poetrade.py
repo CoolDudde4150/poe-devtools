@@ -20,7 +20,7 @@ import requests
 
 from google.protobuf.json_format import MessageToDict
 from google.protobuf import text_format
-import poedevtools.trade.traderequest_pb2 as PoeRequest
+import poedevtools.trade.proto.traderequest_pb2 as PoeRequest
 
 
 class PoeTradeAPI:
