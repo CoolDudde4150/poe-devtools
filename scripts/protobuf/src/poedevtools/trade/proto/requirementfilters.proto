@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package poedevtools.trade;
+package poedevtools.trade.proto;
 
-import "poedevtools/trade/helpers.proto";
+import "poedevtools/trade/proto/helpers.proto";
 
 // Code for filtering based on everything seen below type weapon filters on https://www.pathofexile.com/trade/search
 message Filters {

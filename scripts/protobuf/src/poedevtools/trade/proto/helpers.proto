@@ -3,7 +3,7 @@
 
 syntax = "proto3";
 
-package poedevtools.trade;
+package poedevtools.trade.proto;
 
 message Optional {
     string option = 1;

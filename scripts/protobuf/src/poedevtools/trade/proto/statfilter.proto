@@ -2,9 +2,9 @@
 
 syntax = "proto3";
 
-package poedevtools.trade;
+package poedevtools.trade.proto;
 
-import "poedevtools/trade/helpers.proto";
+import "poedevtools/trade/proto/helpers.proto";
 
 // Code for filtering search by an affix
 message Stats {

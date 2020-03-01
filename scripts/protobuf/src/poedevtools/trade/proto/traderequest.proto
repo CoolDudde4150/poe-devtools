@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-import "poedevtools/trade/statfilter.proto";
-import "poedevtools/trade/helpers.proto";
-import "poedevtools/trade/requirementfilters.proto";
+package poedevtools.trade.proto;
 
-package poedevtools.trade;
+import "poedevtools/trade/proto/statfilter.proto";
+import "poedevtools/trade/proto/helpers.proto";
+import "poedevtools/trade/proto/requirementfilters.proto";
 
 message PoeTradeRequest {
     Query query = 1;
