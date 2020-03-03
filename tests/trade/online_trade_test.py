@@ -3,14 +3,14 @@
 import os
 import sys 
 
-from poedevtools.trade import PoeTrade
+import poedevtools.trade.poetrade as PoeTrade
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 def test_malformed_search():
     """Tests the ability to handle malformed searches
     """
-    trade_obj = PoeTrade.PoeTrade()
+    trade_obj = PoeTrade.PoeTradeAPI()
 
     request = trade_obj.query
     request.query.status.option = "Definitely not online ;)"
@@ -24,7 +24,7 @@ def test_malformed_search():
 def test_empty_search():
     """Tests the PoeTrade object's response to an empty query
     """
-    trade_obj = PoeTrade.PoeTrade()
+    trade_obj = PoeTrade.PoeTradeAPI()
     trade_obj.reset_query()
 
     # Expected error
@@ -38,7 +38,7 @@ def test_query_datatypes():
     """Tests the PoeTrade object's ability to search with various json formats. 
 
     """
-    trade_obj = PoeTrade.PoeTrade()
+    trade_obj = PoeTrade.PoeTradeAPI()
 
     proto_request = trade_obj.query
 
@@ -66,13 +66,13 @@ def test_query_datatypes():
     assert (proto_response == dict_response) and (dict_response == json_response) and (json_response == proto_response)
 
 def test_get_leagues():
-    trade_obj = PoeTrade.PoeTrade()
+    trade_obj = PoeTrade.PoeTradeAPI()
 
     # Assert that there is at least one league returned.
     assert len(trade_obj.get_leagues()) > 0
 
 def test_num_get_trade_search():
-    trade_obj = PoeTrade.PoeTrade()
+    trade_obj = PoeTrade.PoeTradeAPI()
     query = trade_obj.query
 
     query.query.status.option = "online"

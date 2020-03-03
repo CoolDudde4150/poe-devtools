@@ -3,13 +3,19 @@ python:
   - "2.7"
   - "3.4"
   - "3.5"
-  - "3.6"      # current default Python on Travis CI
+  - "3.6" # current default Python on Travis CI
   - "3.7"
   - "3.8"
-  - "3.8-dev"  # 3.8 development branch
-  - "nightly"  # nightly build
+  - "3.8-dev" # 3.8 development branch
+  - "nightly" # nightly build
 # command to install dependencies
 install:
-  - pip install -r requirements.txt
+  - PROTOC_ZIP=protoc-3.7.1-linux-x86_64.zip
+  - curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.7.1/$PROTOC_ZIP
+  - sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
+  - sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
+  - rm -f $PROTOC_ZIP
+  - make setup
+  - source ./activate
 script:
   - python -m pytest

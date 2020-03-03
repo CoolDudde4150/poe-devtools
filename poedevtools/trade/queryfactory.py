@@ -1,7 +1,6 @@
-import poedevtools.trade.trade_request_pb2 as PoeQuery
+import poedevtools.trade.proto.traderequest_pb2 as PoeQuery
 
 from google.protobuf.json_format import MessageToDict
-
 
 class TradeFactory:
     
@@ -17,8 +16,6 @@ class TradeFactory:
     def _set_disabled(self, disabled, query):
         query.disabled = disabled
 
-    
-
 class QueryFactory(TradeFactory):
 
     def __init__(self):
@@ -27,9 +24,11 @@ class QueryFactory(TradeFactory):
         self.filter_factory = FilterFactory()
 
     def get_query(self):
-        self.query.query.stats.MergeFrom(self.stat_factory.stats)
+        # Need a copy so that we can copy to it without repercussions
+        query = self.query
+        query.query.stats.append(self.stat_factory.stats)
 
-        return self._get_query(self.query)
+        return self._get_query(query)
     
     def clear(self):
         self.query.Clear()
@@ -63,8 +62,11 @@ class StatFilterFactory(TradeFactory):
     def set_disabled(self, disabled):
         self.stat_filter.disabled = disabled
         return self
+
+    def set_type(self, search_type):
+        self.stats.type = search_type
     
-    def add_filter(self):
+    def build(self):
         self.stats.filters.extend([self.stat_filter])
 
 
